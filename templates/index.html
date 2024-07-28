@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Stock Price Prediction</title>
+</head>
+<body>
+    <h1>Stock Price Prediction</h1>
+    <form id="predictionForm">
+        <label for="stockData">Enter Historical Stock Data:</label><br>
+        <textarea id="stockData" name="stockData" rows="10" cols="50"></textarea><br>
+        <button type="submit">Predict</button>
+    </form>
+    <div id="result"></div>
+
+    <script>
+        document.getElementById('predictionForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const stockData = formData.get('stockData').split('\n').map(line => line.split(',').map(Number));
+            
+            fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(stockData)
+            })
+            .then(response => response.json())
+            .then(predictions => {
+                document.getElementById('result').innerText = 'Predicted Prices: ' + predictions.join(', ');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>
